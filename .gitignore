@@ -1,0 +1,19 @@
+# Python & Virtual Environments
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+media/
+
+# Node & Frontend Dependencies
+node_modules/
+frontend/node_modules/
+frontend/dist/
+.ds_store
+
+# Environment & IDE
+.env
+.vscode/
+.idea/
