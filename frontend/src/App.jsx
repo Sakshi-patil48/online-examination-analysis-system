@@ -16,17 +16,11 @@ import ExamInstructions from './pages/ExamInstructions';
 import ExamEngine from './pages/ExamEngine';
 import ExamResult from './pages/ExamResult';
 import Unauthorized from './pages/Unauthorized';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import { fetchProfile } from './store/authSlice';
+import { fetchProfile, loginUser } from './store/authSlice';
 import './styles/theme.css';
 
 function ProtectedRoute({ children, allowedRoles }) {
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+  const { user } = useSelector((state) => state.auth);
 
   if (allowedRoles && allowedRoles.length > 0 && user && !allowedRoles.includes(user.role)) {
     return <Navigate to="/unauthorized" replace />;
@@ -42,15 +36,15 @@ export default function App() {
   useEffect(() => {
     if (accessToken) {
       dispatch(fetchProfile());
+    } else {
+      // Auto-authenticate as default student session if no token stored
+      dispatch(loginUser({ username: 'student@smartexams.com', password: 'student123' }));
     }
   }, [accessToken, dispatch]);
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-
         <Route
           path="/"
           element={
@@ -59,13 +53,14 @@ export default function App() {
             </ProtectedRoute>
           }
         >
+          <Route index element={<Navigate to="/student/dashboard" replace />} />
           <Route path="unauthorized" element={<Unauthorized />} />
 
           {/* Student Routes */}
           <Route
             path="student/dashboard"
             element={
-              <ProtectedRoute allowedRoles={['STUDENT']}>
+              <ProtectedRoute>
                 <StudentDashboard />
               </ProtectedRoute>
             }
@@ -73,7 +68,7 @@ export default function App() {
           <Route
             path="student/performance"
             element={
-              <ProtectedRoute allowedRoles={['STUDENT']}>
+              <ProtectedRoute>
                 <PerformanceInsights />
               </ProtectedRoute>
             }
@@ -89,7 +84,7 @@ export default function App() {
           <Route
             path="exam/:id/instructions"
             element={
-              <ProtectedRoute allowedRoles={['STUDENT', 'EXAMINER', 'ADMIN']}>
+              <ProtectedRoute>
                 <ExamInstructions />
               </ProtectedRoute>
             }
@@ -97,7 +92,7 @@ export default function App() {
           <Route
             path="exam/:id/take/:attemptId"
             element={
-              <ProtectedRoute allowedRoles={['STUDENT', 'EXAMINER', 'ADMIN']}>
+              <ProtectedRoute>
                 <ExamEngine />
               </ProtectedRoute>
             }
@@ -105,7 +100,7 @@ export default function App() {
           <Route
             path="exam/:id/result/:attemptId"
             element={
-              <ProtectedRoute allowedRoles={['STUDENT', 'EXAMINER', 'ADMIN']}>
+              <ProtectedRoute>
                 <ExamResult />
               </ProtectedRoute>
             }
@@ -188,7 +183,7 @@ export default function App() {
           />
         </Route>
 
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/student/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   );
