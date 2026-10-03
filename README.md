@@ -77,8 +77,4 @@ npm run dev -- --port 5173
 
 ---
 
-## 🔗 Local Access Links
 
-- **Frontend Application**: [http://localhost:5173/](http://localhost:5173/)
-- **Backend REST API**: [http://127.0.0.1:8000/api/](http://127.0.0.1:8000/api/)
-- **Django Admin Panel**: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
